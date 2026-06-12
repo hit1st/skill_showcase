@@ -14,7 +14,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <a className="skip-link" href="#architecture-explorer">
+          Skip to demonstrators
+        </a>
+        {children}
+      </body>
     </html>
   );
 }

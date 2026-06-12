@@ -58,7 +58,7 @@ Production cache probes: run **Cache path** — API cache (`/api/asset/cached`) 
 
 ## Security headers
 
-Middleware applies baseline headers from `buildSecurityHeaders()` (CSP, `X-Frame-Options`, `Referrer-Policy`, etc.). Static assets inherit additional headers from `apps/web/public/_headers`.
+Middleware applies baseline headers from `buildSecurityHeaders()` (CSP, `X-Frame-Options`, `Referrer-Policy`, COOP/CORP). See ADR-006. Static assets inherit additional headers from `apps/web/public/_headers`.
 
 ## Observability
 

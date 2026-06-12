@@ -57,10 +57,23 @@ curl -s http://localhost:3000/api/metrics | jq
 
 1. **Clone & run** — commands above
 2. **Read** — `docs/architecture.md` and `docs/adr/`
-3. **Explore** — Architecture Explorer (cache / dynamic / failover toggles); Live Delivery Stream (SSE reconnect)
-4. **Trace** — follow the Observability panel walkthrough above (RED metrics, probe, Jaeger link, degraded readiness when Jaeger is down)
-5. **Inspect** — CI workflow, tests, `/api/metrics`, degraded `/api/ready`
+3. **Explore** — Architecture Explorer (cache / dynamic / failover); Live Delivery Stream (SSE reconnect)
+4. **Trace** — Observability panel walkthrough above (RED metrics, probe, Jaeger link)
+5. **Inspect** — CI workflow, tests, `/api/metrics`, degraded `/api/ready` when Jaeger is down
 6. **Judge** — tradeoffs documented in ADRs vs hidden complexity
+
+### Production walkthrough
+
+Use the live site: https://skill-showcase.theimposterdeveloper.workers.dev
+
+1. **Cache path** — four probes: API cache (`x-showcase-cache-status` MISS→HIT) and edge static (`cf-cache-status` MISS→HIT on `/edge-cache/demo.json`)
+2. **Dynamic path** — confirm `no-store` / BYPASS cache status
+3. **Failover path** — primary 503 → fallback 200
+4. **Delivery stream** — Start stream; watch reconnect after simulated failure
+5. **Observability** — RED metrics load; probe returns `trace_id` (Jaeger link works locally only)
+6. **Performance budget** — panel reads CI-generated Lighthouse summary
+7. **Security** — `curl -I` shows CSP, `X-Frame-Options`, `Referrer-Policy` on responses
+8. **Keyboard** — Tab from page load: skip link appears on focus; Tab through demonstrator buttons and contact links
 
 ## Project structure
 
@@ -93,7 +106,7 @@ docs/                  Architecture and ADRs
 - [x] CI: test, build, bundle budget, Lighthouse, dependency audit (critical), OpenNext build
 - [x] Security headers via middleware + static `_headers`
 - [x] Reviewer README section ("How to evaluate")
-- [x] `prefers-reduced-motion` in design tokens
+- [x] `prefers-reduced-motion` in design tokens; keyboard nav (skip link, focus-visible on links and buttons)
 
 ## Deploy to Cloudflare
 
