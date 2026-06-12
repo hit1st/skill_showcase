@@ -1,6 +1,46 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, afterEach } from "vitest";
 import { context } from "@opentelemetry/api";
-import { createTracingRuntime } from "./tracing-runtime";
+import {
+  createTracingRuntime,
+  createTracingStore,
+  resetTracingRuntime,
+} from "./tracing-runtime";
+
+afterEach(() => {
+  resetTracingRuntime();
+});
+
+describe("createTracingStore", () => {
+  it("returns the same runtime when register is called twice", () => {
+    const store = createTracingStore();
+    const config = {
+      serviceName: "showcase-web-test",
+      environment: "development" as const,
+      useInMemoryExporter: true,
+    };
+
+    const first = store.register(config);
+    const second = store.register({
+      ...config,
+      serviceName: "other-service",
+    });
+
+    expect(second).toBe(first);
+  });
+
+  it("ensure lazily registers when no runtime exists", () => {
+    const store = createTracingStore();
+
+    const runtime = store.ensure({
+      serviceName: "ensure-test",
+      environment: "development",
+      useInMemoryExporter: true,
+    });
+
+    expect(runtime.completedSpans).toBeDefined();
+    expect(store.get()).toBe(runtime);
+  });
+});
 
 describe("createTracingRuntime", () => {
   it("records nested edge and api spans with exported attributes", async () => {

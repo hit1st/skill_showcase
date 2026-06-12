@@ -63,6 +63,25 @@ export type StreamFailureStore = {
   readonly evaluate: (failOnce: boolean) => { readonly fail: boolean };
 };
 
+export type StreamResponseMode = "failure" | "sse";
+
+export type StreamResponsePlan = {
+  readonly status: 200 | 503;
+  readonly mode: StreamResponseMode;
+  readonly failOnce: boolean;
+  readonly sseSpanStatus: number;
+};
+
+export const resolveStreamResponse = (input: {
+  readonly failOnce: boolean;
+  readonly fail: boolean;
+}): StreamResponsePlan => ({
+  status: input.fail ? 503 : 200,
+  mode: input.fail ? "failure" : "sse",
+  failOnce: input.failOnce,
+  sseSpanStatus: input.fail ? 503 : 200,
+});
+
 export const createStreamFailureStore = (
   initial: StreamFailureState = initialStreamFailureState(),
 ): StreamFailureStore => {

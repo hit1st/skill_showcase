@@ -32,6 +32,7 @@ export { shouldSampleTrace } from "./sampler";
 export type { SamplingInput } from "./sampler";
 export {
   createTracingRuntime,
+  createTracingStore,
   ensureTracingRegistered,
   getTracingRuntime,
   registerTracing,
@@ -42,4 +43,5 @@ export type {
   TracingConfig,
   TracingEnvironment,
   TracingRuntime,
+  TracingStore,
 } from "./tracing-runtime";

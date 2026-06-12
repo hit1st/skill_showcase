@@ -16,6 +16,10 @@ export const traceCarrierFromRequest = (
   tracestate: request.headers.get("tracestate") ?? "",
 });
 
+/**
+ * HTTP route I/O boundary: composes nested OTel spans around handler execution.
+ * Attribute builders stay pure; span lifecycle remains in tracing-runtime.
+ */
 export const withRequestTracing = async <T>(
   request: NextRequest,
   route: string,

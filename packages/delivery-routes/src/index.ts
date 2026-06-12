@@ -28,8 +28,9 @@ export {
   formatSseEvent,
   formatSseEvents,
   initialStreamFailureState,
+  resolveStreamResponse,
   STREAM_EVENT_COUNT,
 } from "./stream";
-export type { StreamEvent, StreamFailureState, StreamFailureStore } from "./stream";
+export type { StreamEvent, StreamFailureState, StreamFailureStore, StreamResponsePlan } from "./stream";
 export { evaluateBudget, parseLighthouseSummary } from "./budget";
 export type { BudgetSnapshot, LighthouseSummaryInput } from "./budget";

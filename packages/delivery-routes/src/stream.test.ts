@@ -6,6 +6,7 @@ import {
   evaluateStreamFailure,
   formatSseEvents,
   initialStreamFailureState,
+  resolveStreamResponse,
   STREAM_EVENT_COUNT,
 } from "./stream";
 
@@ -62,5 +63,25 @@ describe("evaluateStreamFailure", () => {
 
     expect(result.fail).toBe(false);
     expect(result.next.hasFailedOnce).toBe(false);
+  });
+});
+
+describe("resolveStreamResponse", () => {
+  it("plans a 503 failure response when failOnce triggers", () => {
+    expect(resolveStreamResponse({ failOnce: true, fail: true })).toEqual({
+      status: 503,
+      mode: "failure",
+      failOnce: true,
+      sseSpanStatus: 503,
+    });
+  });
+
+  it("plans an sse response when failure is not triggered", () => {
+    expect(resolveStreamResponse({ failOnce: true, fail: false })).toEqual({
+      status: 200,
+      mode: "sse",
+      failOnce: true,
+      sseSpanStatus: 200,
+    });
   });
 });

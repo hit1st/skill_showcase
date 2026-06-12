@@ -49,8 +49,25 @@ export type TracingRuntime = {
   readonly completedSpans: () => readonly CompletedSpan[];
 };
 
+export type TracingStore = {
+  readonly register: (config: TracingConfig) => TracingRuntime;
+  readonly ensure: (config?: Partial<TracingConfig>) => TracingRuntime;
+  readonly get: () => TracingRuntime;
+  readonly reset: () => void;
+};
+
 const defaultOtlpEndpoint = (): string =>
   process.env.OTEL_EXPORTER_OTLP_ENDPOINT ?? "http://127.0.0.1:4318";
+
+const defaultEnvironment = (): TracingEnvironment =>
+  process.env.NODE_ENV === "production" ? "production" : "development";
+
+const resolveTracingConfig = (config: Partial<TracingConfig>): TracingConfig => ({
+  serviceName: config.serviceName ?? "showcase-web",
+  environment: config.environment ?? defaultEnvironment(),
+  otlpEndpoint: config.otlpEndpoint ?? process.env.OTEL_EXPORTER_OTLP_ENDPOINT,
+  useInMemoryExporter: config.useInMemoryExporter,
+});
 
 const toCompletedSpan = (
   span: ReturnType<InMemorySpanExporter["getFinishedSpans"]>[number],
@@ -75,6 +92,14 @@ const writeGlobalRuntime = (runtime: TracingRuntime): void => {
   (globalThis as GlobalTracingState)[TRACING_RUNTIME_KEY] = runtime;
 };
 
+const clearGlobalRuntime = (): void => {
+  delete (globalThis as GlobalTracingState)[TRACING_RUNTIME_KEY];
+};
+
+/**
+ * OTel Node SDK requires span.start/end and OTLP export at this boundary.
+ * withSpan isolates imperative lifecycle; callers pass pure attribute builders.
+ */
 export const createTracingRuntime = (config: TracingConfig): TracingRuntime => {
   const inMemoryExporter = config.useInMemoryExporter
     ? new InMemorySpanExporter()
@@ -139,52 +164,73 @@ export const createTracingRuntime = (config: TracingConfig): TracingRuntime => {
   };
 };
 
-let registeredRuntime: TracingRuntime | undefined;
-
-export const registerTracing = (config: TracingConfig): TracingRuntime => {
-  const existing = readGlobalRuntime();
-
-  if (existing) {
-    registeredRuntime = existing;
-    return existing;
-  }
-
-  const runtime = createTracingRuntime(config);
+const publishRuntime = (runtime: TracingRuntime): TracingRuntime => {
   writeGlobalRuntime(runtime);
-  registeredRuntime = runtime;
   return runtime;
 };
 
-export const getTracingRuntime = (): TracingRuntime => {
-  const runtime = readGlobalRuntime() ?? registeredRuntime;
+/**
+ * Next.js loads duplicate module instances; globalThis slot plus local binding
+ * keeps registration idempotent across instrumentation and route bundles.
+ */
+export const createTracingStore = (): TracingStore => {
+  let localRuntime: TracingRuntime | undefined;
 
-  if (!runtime) {
-    throw new Error("tracing runtime is not registered");
-  }
+  const currentRuntime = (): TracingRuntime | undefined =>
+    readGlobalRuntime() ?? localRuntime;
 
-  return runtime;
+  return {
+    register: (config: TracingConfig): TracingRuntime => {
+      const existing = currentRuntime();
+
+      if (existing) {
+        localRuntime = existing;
+        return existing;
+      }
+
+      const runtime = publishRuntime(createTracingRuntime(config));
+      localRuntime = runtime;
+      return runtime;
+    },
+    ensure: (config: Partial<TracingConfig> = {}): TracingRuntime => {
+      const existing = currentRuntime();
+
+      if (existing) {
+        return existing;
+      }
+
+      const runtime = publishRuntime(createTracingRuntime(resolveTracingConfig(config)));
+      localRuntime = runtime;
+      return runtime;
+    },
+    get: (): TracingRuntime => {
+      const runtime = currentRuntime();
+
+      if (!runtime) {
+        throw new Error("tracing runtime is not registered");
+      }
+
+      return runtime;
+    },
+    reset: (): void => {
+      localRuntime = undefined;
+      clearGlobalRuntime();
+    },
+  };
 };
+
+const defaultTracingStore = createTracingStore();
+
+export const registerTracing = (config: TracingConfig): TracingRuntime =>
+  defaultTracingStore.register(config);
+
+export const getTracingRuntime = (): TracingRuntime =>
+  defaultTracingStore.get();
 
 export const resetTracingRuntime = (): void => {
-  registeredRuntime = undefined;
-  delete (globalThis as GlobalTracingState)[TRACING_RUNTIME_KEY];
+  defaultTracingStore.reset();
 };
-
-const defaultEnvironment = (): TracingEnvironment =>
-  process.env.NODE_ENV === "production" ? "production" : "development";
 
 export const ensureTracingRegistered = (
   config: Partial<TracingConfig> = {},
-): TracingRuntime => {
-  const existing = readGlobalRuntime() ?? registeredRuntime;
-
-  if (existing) {
-    return existing;
-  }
-
-  return registerTracing({
-    serviceName: config.serviceName ?? "showcase-web",
-    environment: config.environment ?? defaultEnvironment(),
-    otlpEndpoint: config.otlpEndpoint ?? process.env.OTEL_EXPORTER_OTLP_ENDPOINT,
-  });
-};
+): TracingRuntime => defaultTracingStore.ensure(config);
