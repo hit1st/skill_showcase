@@ -1,7 +1,11 @@
 "use client";
 
 import { Button, StatusBadge } from "@showcase/design-system";
-import { DELIVERY_ROUTES, resolveProbeCacheStatus } from "@showcase/delivery-routes";
+import {
+  DELIVERY_ROUTES,
+  EDGE_CACHE_DEMO_PATH,
+  resolveProbeCacheStatus,
+} from "@showcase/delivery-routes";
 import { useState } from "react";
 
 type ProbeResult = {
@@ -53,8 +57,10 @@ export const ArchitectureExplorer = () => {
 
   const runCacheScenario = () =>
     runScenario(async () => [
-      await probe("Cached request #1", DELIVERY_ROUTES.cachedAsset),
-      await probe("Cached request #2", DELIVERY_ROUTES.cachedAsset),
+      await probe("API cache #1", DELIVERY_ROUTES.cachedAsset),
+      await probe("API cache #2", DELIVERY_ROUTES.cachedAsset),
+      await probe("Edge static #1", EDGE_CACHE_DEMO_PATH),
+      await probe("Edge static #2", EDGE_CACHE_DEMO_PATH),
     ]);
 
   const runDynamicScenario = () =>
@@ -77,8 +83,9 @@ export const ArchitectureExplorer = () => {
   return (
     <div className="demonstrator">
       <p className="demonstrator-copy">
-        Live HTTP probes against origin routes. Production on Cloudflare exposes{" "}
-        <code>cf-cache-status</code>; local dev uses <code>x-showcase-cache-status</code>.
+        Live HTTP probes against origin routes. API cache uses{" "}
+        <code>x-showcase-cache-status</code>; edge static probes expose{" "}
+        <code>cf-cache-status</code> on Cloudflare.
       </p>
       <div className="demonstrator-actions">
         <Button disabled={loading} onClick={runCacheScenario}>

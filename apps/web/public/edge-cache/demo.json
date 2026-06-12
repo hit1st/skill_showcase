@@ -1,0 +1,5 @@
+{
+  "kind": "cached",
+  "source": "edge-static",
+  "note": "Static asset cached at Cloudflare CDN; probes expose cf-cache-status."
+}

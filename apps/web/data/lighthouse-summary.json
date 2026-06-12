@@ -3,7 +3,7 @@
   "accessibilityScore": 0.95,
   "audits": {
     "largest-contentful-paint": {
-      "numericValue": 1702.0733
+      "numericValue": 1702.6524
     },
     "cumulative-layout-shift": {
       "numericValue": 0

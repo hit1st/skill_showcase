@@ -34,6 +34,8 @@ export {
 export type { SpanAttributes } from "./span-attributes";
 export { shouldSampleTrace } from "./sampler";
 export type { SamplingInput } from "./sampler";
+export { buildLighthouseServerEnv } from "./lighthouse-server-env";
+export { requiresOtlpReadinessCheck } from "./readiness-policy";
 export {
   createTracingRuntime,
   createTracingStore,

@@ -8,6 +8,7 @@ import {
   parseLighthouseSummary,
   toLighthouseSummary,
 } from "@showcase/delivery-routes";
+import { buildLighthouseServerEnv } from "@showcase/observability";
 
 const SERVER_PORT = "3456";
 const APP_URL = `http://127.0.0.1:${SERVER_PORT}`;
@@ -34,7 +35,7 @@ const waitForServer = async (url: string, attempts = 30): Promise<void> => {
 const startServer = (): ChildProcess => {
   const child = spawn("npm", ["run", "start", "--workspace=@showcase/web"], {
     stdio: "inherit",
-    env: { ...process.env, PORT: SERVER_PORT },
+    env: buildLighthouseServerEnv(process.env, SERVER_PORT),
   });
 
   child.on("error", (error) => {

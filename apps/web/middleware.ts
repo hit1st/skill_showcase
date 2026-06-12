@@ -1,5 +1,14 @@
+import { buildSecurityHeaders } from "@showcase/delivery-routes";
 import { NextResponse, type NextRequest } from "next/server";
 import { resolveTraceContext, toTraceparent } from "@showcase/observability/tracing";
+
+const applySecurityHeaders = (response: NextResponse): NextResponse => {
+  Object.entries(buildSecurityHeaders()).forEach(([name, value]) => {
+    response.headers.set(name, value);
+  });
+
+  return response;
+};
 
 export const middleware = (request: NextRequest) => {
   const context = resolveTraceContext(request.headers.get("traceparent"));
@@ -15,9 +24,12 @@ export const middleware = (request: NextRequest) => {
   response.headers.set("x-trace-id", context.traceId);
   response.headers.set("x-request-id", context.requestId);
   response.headers.set("traceparent", toTraceparent(context));
-  response.headers.set("Access-Control-Expose-Headers", "x-trace-id, x-request-id, traceparent");
+  response.headers.set(
+    "Access-Control-Expose-Headers",
+    "x-trace-id, x-request-id, traceparent, cf-cache-status, x-showcase-cache-status",
+  );
 
-  return response;
+  return applySecurityHeaders(response);
 };
 
 export const config = {

@@ -3,6 +3,7 @@ import {
   checkReady,
   createLogger,
   createMetricsRegistry,
+  requiresOtlpReadinessCheck,
   type Logger,
   type MetricsRegistry,
 } from "@showcase/observability";
@@ -46,7 +47,9 @@ export const probeOtlpReachable = async (
 };
 
 export const evaluateReadiness = async () => {
-  const otlpReachable = await probeOtlpReachable();
+  const otlpReachable = requiresOtlpReadinessCheck()
+    ? await probeOtlpReachable()
+    : true;
 
   return checkReady({
     otlpReachable,

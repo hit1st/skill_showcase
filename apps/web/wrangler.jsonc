@@ -7,6 +7,8 @@
   "vars": {
     "SHOWCASE_TRACING_PLATFORM": "cloudflare-workers"
   },
+  // Optional custom domain (zone must be on Cloudflare):
+  // "routes": [{ "pattern": "showcase.example.com/*", "zone_name": "example.com" }]
   "assets": {
     "directory": ".open-next/assets",
     "binding": "ASSETS"

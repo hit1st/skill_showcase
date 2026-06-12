@@ -31,7 +31,7 @@ Real HTTP routes — no simulated state machine:
 | `GET /api/origin/primary?simulateFailure=1` | Returns 503 |
 | `GET /api/origin/fallback` | Returns 200 after failover |
 
-Production on Cloudflare exposes `cf-cache-status`; local dev uses `x-showcase-cache-status`. The Architecture Explorer prefers `cf-cache-status` when present.
+Production on Cloudflare exposes `cf-cache-status` on static edge assets (`/edge-cache/demo.json`); API cache probes use `x-showcase-cache-status`. The Architecture Explorer prefers `cf-cache-status` when present.
 
 ### SSE delivery stream
 
@@ -50,16 +50,22 @@ npm run build:cloudflare          # verify Worker bundle (also runs in CI)
 npm run deploy:cloudflare         # requires wrangler login + Cloudflare account
 ```
 
-Production cache probes: run **Cache path** in the Architecture Explorer — expect first request `cf-cache-status: MISS`, second `HIT` on the same PoP.
+Production cache probes: run **Cache path** — API cache (`/api/asset/cached`) shows isolate-level `x-showcase-cache-status`; edge static (`/edge-cache/demo.json`) shows CDN `cf-cache-status: MISS` → `HIT`.
 
-**Tradeoffs:** Workers Free limits (3 MB bundle, 100k req/day). OTLP span export is disabled on Workers (`SHOWCASE_TRACING_PLATFORM=cloudflare-workers`); middleware still propagates `x-trace-id`. Production readiness reports `otlp_exporter` degraded unless a remote collector is configured.
+**Tradeoffs:** Workers Free limits (3 MB bundle, 100k req/day). OTLP span export is disabled on Workers (`SHOWCASE_TRACING_PLATFORM=cloudflare-workers`); middleware still propagates `x-trace-id`. Production `/api/ready` skips OTLP reachability on Workers.
+
+**CI deploy:** `.github/workflows/deploy.yml` runs after CI passes when `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` secrets are configured.
+
+## Security headers
+
+Middleware applies baseline headers from `buildSecurityHeaders()` (CSP, `X-Frame-Options`, `Referrer-Policy`, etc.). Static assets inherit additional headers from `apps/web/public/_headers`.
 
 ## Observability
 
 - **Tracing:** W3C `traceparent` in middleware; OTLP export to Jaeger; spans at `edge.request`, `api.handler`, origin routes, and `sse.stream`
 - **Logging:** Structured JSON via `@showcase/observability` logger
 - **Metrics:** RED snapshot at `/api/metrics`; in-app panel derives rate, errors, and latency
-- **Health:** Liveness `/api/health`; readiness `/api/ready` (503 when OTLP unreachable)
+- **Health:** Liveness `/api/health`; readiness `/api/ready` (503 when OTLP unreachable in local Node runtime)
 
 ### Local trace viewing
 

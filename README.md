@@ -77,7 +77,23 @@ docs/                  Architecture and ADRs
 
 - **Phase 2:** Foundation — observability, design system, homepage shell, CI
 - **Phase 3:** Demonstrators — architecture explorer, SSE stream, performance budget panel
-- **Phase 4 (in progress):** OTel span export, observability panel, Lighthouse CI, Cloudflare deploy config; pre-launch polish remains
+- **Phase 4:** Observability surface, Lighthouse CI, Cloudflare deploy — complete
+
+**Production:** https://skill-showcase.theimposterdeveloper.workers.dev
+
+## Pre-launch checklist
+
+- [x] Homepage copy minimal (name, contact, one line)
+- [x] Demonstrators work in production build and on Cloudflare
+- [x] Tracing: `x-trace-id` on requests; Jaeger locally; noop tracing on Workers
+- [x] `/api/health` and `/api/ready` pass on Workers (OTLP check skipped in production)
+- [x] Observability panel: RED metrics, probe, Jaeger link, span tree
+- [x] ADRs document tracing, deploy, sampling, demonstrator selection
+- [x] Tests cover demonstrator happy + failure paths
+- [x] CI: test, build, bundle budget, Lighthouse, dependency audit (critical), OpenNext build
+- [x] Security headers via middleware + static `_headers`
+- [x] Reviewer README section ("How to evaluate")
+- [x] `prefers-reduced-motion` in design tokens
 
 ## Deploy to Cloudflare
 
@@ -86,7 +102,11 @@ npx wrangler login
 npm run deploy:cloudflare
 ```
 
-Open the deployed `*.workers.dev` URL and run **Cache path** in the Architecture Explorer — `cf-cache-status` should show `MISS` then `HIT`.
+**CI deploy (optional):** set repository variable `ENABLE_CF_DEPLOY=true` and add secrets `CLOUDFLARE_API_TOKEN` + `CLOUDFLARE_ACCOUNT_ID`. Deploy runs after CI passes on `main`.
+
+**Custom domain:** uncomment `routes` in `apps/web/wrangler.jsonc` once your zone is on Cloudflare (e.g. `showcase.example.com`).
+
+Open the deployed URL and run **Cache path** — API probes use `x-showcase-cache-status`; edge static probes (`/edge-cache/demo.json`) show `cf-cache-status: MISS` → `HIT`.
 
 ## Scripts
 

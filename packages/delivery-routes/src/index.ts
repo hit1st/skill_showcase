@@ -43,3 +43,6 @@ export {
 } from "./bundle-budget";
 export { toLighthouseSummary } from "./lighthouse-report";
 export type { LighthouseReportInput } from "./lighthouse-report";
+export { EDGE_CACHE_DEMO_PATH } from "./edge-cache-demo";
+export { buildSecurityHeaders } from "./security-headers";
+export type { SecurityHeaderMap } from "./security-headers";

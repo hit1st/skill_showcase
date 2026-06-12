@@ -7,7 +7,7 @@ export const resolveTracingPlatform = (
     return "cloudflare-workers";
   }
 
-  if (env.NEXT_RUNTIME !== "nodejs") {
+  if (env.NEXT_RUNTIME === "edge") {
     return "cloudflare-workers";
   }
 

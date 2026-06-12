@@ -24,11 +24,43 @@ describe("probeOtlpReachable", () => {
 
 describe("evaluateReadiness", () => {
   it("returns degraded when OTLP probe fails", async () => {
-    vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("down")));
+    const previous = process.env.SHOWCASE_TRACING_PLATFORM;
+    delete process.env.SHOWCASE_TRACING_PLATFORM;
 
-    const result = await evaluateReadiness();
+    try {
+      vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("down")));
 
-    expect(result.status).toBe("degraded");
-    expect(result.httpStatus).toBe(503);
+      const result = await evaluateReadiness();
+
+      expect(result.status).toBe("degraded");
+      expect(result.httpStatus).toBe(503);
+    } finally {
+      if (previous === undefined) {
+        delete process.env.SHOWCASE_TRACING_PLATFORM;
+      } else {
+        process.env.SHOWCASE_TRACING_PLATFORM = previous;
+      }
+    }
+  });
+
+  it("returns ready on Workers when OTLP is intentionally disabled", async () => {
+    const previous = process.env.SHOWCASE_TRACING_PLATFORM;
+    process.env.SHOWCASE_TRACING_PLATFORM = "cloudflare-workers";
+
+    try {
+      vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("down")));
+
+      const result = await evaluateReadiness();
+
+      expect(result.status).toBe("ready");
+      expect(result.httpStatus).toBe(200);
+      expect(result.checks.find((check) => check.name === "otlp_exporter")?.ok).toBe(true);
+    } finally {
+      if (previous === undefined) {
+        delete process.env.SHOWCASE_TRACING_PLATFORM;
+      } else {
+        process.env.SHOWCASE_TRACING_PLATFORM = previous;
+      }
+    }
   });
 });
