@@ -45,7 +45,7 @@ Production on Cloudflare exposes `cf-cache-status`; local dev uses `x-showcase-c
 
 - **Tracing:** W3C `traceparent` in middleware; OTLP export to Jaeger; spans at `edge.request`, `api.handler`, origin routes, and `sse.stream`
 - **Logging:** Structured JSON via `@showcase/observability` logger
-- **Metrics:** RED snapshot at `/api/metrics`
+- **Metrics:** RED snapshot at `/api/metrics`; in-app panel derives rate, errors, and latency
 - **Health:** Liveness `/api/health`; readiness `/api/ready` (503 when OTLP unreachable)
 
 ### Local trace viewing
@@ -69,6 +69,5 @@ First Load JS target documented in ADR-001. Phase 4 adds CI enforcement via Ligh
 
 - Geo-redundant multi-region origin
 - Auth/CMS
-- In-app RED metrics panel (Phase 4b)
 
 See `docs/adr/` for decisions and tradeoffs.

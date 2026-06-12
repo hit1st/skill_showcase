@@ -8,7 +8,10 @@
   "exports": {
     ".": "./src/index.ts",
     "./tracing": "./src/tracing.ts",
-    "./tracing-runtime": "./src/tracing-runtime.ts"
+    "./tracing-runtime": "./src/tracing-runtime.ts",
+    "./metrics": "./src/metrics.ts",
+    "./red-summary": "./src/red-summary.ts",
+    "./span-tree": "./src/span-tree.ts"
   },
   "scripts": {
     "test": "vitest run"

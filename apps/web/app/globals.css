@@ -97,6 +97,13 @@ main {
   word-break: break-all;
 }
 
+.span-tree {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  margin: 0;
+  white-space: pre-wrap;
+}
+
 .stream-meta,
 .budget-grid {
   display: flex;

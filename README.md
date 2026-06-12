@@ -38,7 +38,7 @@ curl -s http://localhost:3000/api/metrics | jq
 1. **Clone & run** — commands above
 2. **Read** — `docs/architecture.md` and `docs/adr/`
 3. **Explore** — Architecture Explorer (cache / dynamic / failover toggles); Live Delivery Stream (SSE reconnect)
-4. **Trace** — trigger a request, follow `x-trace-id` in Jaeger
+4. **Trace** — use the Observability panel (RED metrics, probe, Jaeger link) or follow `x-trace-id` in Jaeger
 5. **Inspect** — CI workflow, tests, `/api/metrics`, degraded `/api/ready`
 6. **Judge** — tradeoffs documented in ADRs vs hidden complexity
 
@@ -57,7 +57,7 @@ docs/                  Architecture and ADRs
 
 - **Phase 2:** Foundation — observability, design system, homepage shell, CI
 - **Phase 3:** Demonstrators — architecture explorer, SSE stream, performance budget panel
-- **Phase 4 (in progress):** OTel span export to Jaeger; observability UI, Cloudflare deploy, Lighthouse CI enforcement
+- **Phase 4 (in progress):** OTel span export + in-app observability panel; Cloudflare deploy, Lighthouse CI enforcement remain
 
 ## Scripts
 

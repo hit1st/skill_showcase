@@ -1,7 +1,7 @@
 import { ArchitectureExplorer } from "./components/ArchitectureExplorer";
 import { DeliveryStream } from "./components/DeliveryStream";
+import { ObservabilityPanel } from "./components/ObservabilityPanel";
 import { PerformanceBudgetPanel } from "./components/PerformanceBudgetPanel";
-import { TraceProbe } from "./components/TraceProbe";
 import { Panel, StatusBadge } from "@showcase/design-system";
 
 const PROFILE = {
@@ -36,8 +36,8 @@ export default function HomePage() {
       </Panel>
 
       <Panel id="observability" title="Observability">
-        <StatusBadge label="trace probe" tone="success" />
-        <TraceProbe />
+        <StatusBadge label="live" tone="success" />
+        <ObservabilityPanel />
       </Panel>
 
       <Panel id="performance-budget" title="Performance Budget">

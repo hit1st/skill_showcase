@@ -13,6 +13,10 @@ export type {
   MetricsSnapshot,
   RequestMetricInput,
 } from "./metrics";
+export { deriveRedSummary } from "./red-summary";
+export type { RedSummary } from "./red-summary";
+export { formatSpanTree, probeSpanTree } from "./span-tree";
+export type { SpanTreeNode } from "./span-tree";
 export {
   createTraceContext,
   parseTraceparent,

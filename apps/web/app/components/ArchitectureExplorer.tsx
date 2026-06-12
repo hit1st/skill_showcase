@@ -74,7 +74,7 @@ export const ArchitectureExplorer = () => {
   return (
     <div className="demonstrator">
       <p className="demonstrator-copy">
-        Teaching model: real HTTP routes. Production on Cloudflare exposes{" "}
+        Live HTTP probes against origin routes. Production on Cloudflare exposes{" "}
         <code>cf-cache-status</code>; local dev uses <code>x-showcase-cache-status</code>.
       </p>
       <div className="demonstrator-actions">
