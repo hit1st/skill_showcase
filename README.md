@@ -18,7 +18,27 @@ npm run dev
 
 Open http://localhost:3000
 
+## Shut down
+
+```bash
+# Stop the dev server: Ctrl+C in the terminal running npm run dev
+docker compose -f infra/docker/docker-compose.yml down
+```
+
+Confirm Jaeger is stopped: `docker compose -f infra/docker/docker-compose.yml ps` (no running containers).
+
 ## How to view traces locally
+
+### In the Observability panel (recommended)
+
+1. Start Jaeger and the app (see Quick start)
+2. Open http://localhost:3000 and scroll to **Observability**
+3. Confirm RED metrics load (rate, errors, duration) and readiness badges show `otlp_exporter reachable`
+4. Click **Probe /api/health** — counters should increment
+5. Copy `trace_id` or click **Open in Jaeger** — expect span tree: `edge.request` → `api.handler`
+6. Stop Jaeger (`docker compose ... down`) and refresh — readiness should flip to `degraded`; probe still returns a trace ID
+
+### Via curl + Jaeger UI
 
 1. Start Jaeger: `docker compose -f infra/docker/docker-compose.yml up -d`
 2. Run the app: `npm run dev`
@@ -38,7 +58,7 @@ curl -s http://localhost:3000/api/metrics | jq
 1. **Clone & run** — commands above
 2. **Read** — `docs/architecture.md` and `docs/adr/`
 3. **Explore** — Architecture Explorer (cache / dynamic / failover toggles); Live Delivery Stream (SSE reconnect)
-4. **Trace** — use the Observability panel (RED metrics, probe, Jaeger link) or follow `x-trace-id` in Jaeger
+4. **Trace** — follow the Observability panel walkthrough above (RED metrics, probe, Jaeger link, degraded readiness when Jaeger is down)
 5. **Inspect** — CI workflow, tests, `/api/metrics`, degraded `/api/ready`
 6. **Judge** — tradeoffs documented in ADRs vs hidden complexity
 
@@ -66,3 +86,4 @@ docs/                  Architecture and ADRs
 | `npm test` | Run all package tests |
 | `npm run build` | Production build |
 | `npm run dev` | Local development server |
+| `docker compose -f infra/docker/docker-compose.yml down` | Stop Jaeger |
