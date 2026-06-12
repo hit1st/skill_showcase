@@ -50,12 +50,16 @@ export const PerformanceBudgetPanel = () => {
     <div className="demonstrator">
       <p className="demonstrator-copy">
         Metrics from checked-in Lighthouse CI summary ({payload.source}). Targets: performance ≥
-        90, LCP &lt; 2.5s, CLS ≤ 0.1.
+        90, accessibility ≥ 95, LCP &lt; 2.5s, CLS ≤ 0.1.
       </p>
       <div className="budget-grid">
         <div>
           <strong>Performance</strong>
           <p>{snapshot.performanceScore}</p>
+        </div>
+        <div>
+          <strong>Accessibility</strong>
+          <p>{snapshot.accessibilityScore}</p>
         </div>
         <div>
           <strong>LCP</strong>

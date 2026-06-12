@@ -34,3 +34,10 @@ export {
 export type { StreamEvent, StreamFailureState, StreamFailureStore, StreamResponsePlan } from "./stream";
 export { evaluateBudget, parseLighthouseSummary } from "./budget";
 export type { BudgetSnapshot, LighthouseSummaryInput } from "./budget";
+export {
+  evaluateBundleBudget,
+  HOME_ROUTE_FIRST_LOAD_JS_BUDGET_KB,
+  parseHomeFirstLoadJsKb,
+} from "./bundle-budget";
+export { toLighthouseSummary } from "./lighthouse-report";
+export type { LighthouseReportInput } from "./lighthouse-report";

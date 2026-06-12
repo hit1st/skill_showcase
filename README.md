@@ -77,7 +77,7 @@ docs/                  Architecture and ADRs
 
 - **Phase 2:** Foundation — observability, design system, homepage shell, CI
 - **Phase 3:** Demonstrators — architecture explorer, SSE stream, performance budget panel
-- **Phase 4 (in progress):** OTel span export + in-app observability panel; Cloudflare deploy, Lighthouse CI enforcement remain
+- **Phase 4 (in progress):** OTel span export, in-app observability panel, Lighthouse CI + bundle budget enforcement; Cloudflare deploy remains
 
 ## Scripts
 
@@ -86,4 +86,6 @@ docs/                  Architecture and ADRs
 | `npm test` | Run all package tests |
 | `npm run build` | Production build |
 | `npm run dev` | Local development server |
+| `npm run budget:check -- build-output.txt` | Enforce homepage First Load JS budget from build output |
+| `npm run lighthouse:ci` | Run Lighthouse against production server and enforce budgets |
 | `docker compose -f infra/docker/docker-compose.yml down` | Stop Jaeger |

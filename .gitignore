@@ -5,6 +5,7 @@ node_modules/
 dist/
 coverage/
 *.log
+build-output.txt
 .env
 .env.local
 .DS_Store

@@ -1,8 +1,15 @@
 {
-  "performanceScore": 0.94,
+  "performanceScore": 1,
+  "accessibilityScore": 0.95,
   "audits": {
-    "largest-contentful-paint": { "numericValue": 2100 },
-    "interaction-to-next-paint": { "numericValue": 120 },
-    "cumulative-layout-shift": { "numericValue": 0.04 }
+    "largest-contentful-paint": {
+      "numericValue": 1702.0733
+    },
+    "cumulative-layout-shift": {
+      "numericValue": 0
+    },
+    "interaction-to-next-paint": {
+      "numericValue": 0
+    }
   }
 }

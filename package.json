@@ -10,10 +10,14 @@
     "dev": "npm run dev --workspace=@showcase/web",
     "test": "vitest run",
     "test:watch": "vitest",
-    "lint": "npm run lint --workspace=@showcase/web"
+    "lint": "npm run lint --workspace=@showcase/web",
+    "budget:check": "tsx scripts/check-bundle-budget.ts",
+    "lighthouse:ci": "tsx scripts/lighthouse-ci.ts"
   },
   "devDependencies": {
     "@types/node": "^22.15.21",
+    "lighthouse": "^12.8.2",
+    "tsx": "^4.20.3",
     "typescript": "^5.8.3",
     "vitest": "^3.2.1"
   }

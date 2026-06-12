@@ -39,7 +39,7 @@ Production on Cloudflare exposes `cf-cache-status`; local dev uses `x-showcase-c
 
 ### Performance budget panel
 
-`GET /api/budget` reads checked-in Lighthouse CI summary from `apps/web/data/lighthouse-summary.json` and evaluates against showcase thresholds (performance ≥ 90, LCP < 2.5s, CLS ≤ 0.1).
+`GET /api/budget` reads checked-in Lighthouse CI summary from `apps/web/data/lighthouse-summary.json` and evaluates against showcase thresholds (performance ≥ 90, accessibility ≥ 95, LCP < 2.5s, CLS ≤ 0.1).
 
 ## Observability
 
@@ -63,7 +63,9 @@ Trigger a demonstrator, copy `x-trace-id`, search in Jaeger. Expect nested spans
 
 <a id="bundle-budget"></a>
 
-First Load JS target documented in ADR-001. Phase 4 adds CI enforcement via Lighthouse.
+First Load JS target: homepage ≤ **150 kB** (current ~106 kB). CI enforces via `npm run budget:check` after `next build`.
+
+Lighthouse thresholds enforced in CI (`npm run lighthouse:ci`): performance ≥ 90, accessibility ≥ 95, LCP < 2.5s, CLS ≤ 0.1. Results are written to `apps/web/data/lighthouse-summary.json` for the Performance Budget panel.
 
 ## Deferred
 
