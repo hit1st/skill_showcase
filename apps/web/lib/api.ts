@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { flushTracing, withRequestTracing } from "@/lib/request-tracing";
 import { recordApiRequest } from "@/lib/observability";
 
 export type ApiHandler = (
@@ -9,7 +10,8 @@ export const withApiObservability =
   (route: string, handler: ApiHandler): ApiHandler =>
   async (request) => {
     const startedAt = Date.now();
-    const response = await handler(request);
+
+    const response = await withRequestTracing(request, route, () => handler(request));
     const durationMs = Date.now() - startedAt;
 
     recordApiRequest({
@@ -20,6 +22,8 @@ export const withApiObservability =
       traceId: response.headers.get("x-trace-id") ?? request.headers.get("x-trace-id") ?? "unknown",
       requestId: response.headers.get("x-request-id") ?? request.headers.get("x-request-id") ?? "unknown",
     });
+
+    await flushTracing();
 
     return response;
   };

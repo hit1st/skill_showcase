@@ -43,7 +43,7 @@ Production on Cloudflare exposes `cf-cache-status`; local dev uses `x-showcase-c
 
 ## Observability
 
-- **Tracing:** W3C `traceparent` in middleware; `x-trace-id` on responses
+- **Tracing:** W3C `traceparent` in middleware; OTLP export to Jaeger; spans at `edge.request`, `api.handler`, origin routes, and `sse.stream`
 - **Logging:** Structured JSON via `@showcase/observability` logger
 - **Metrics:** RED snapshot at `/api/metrics`
 - **Health:** Liveness `/api/health`; readiness `/api/ready` (503 when OTLP unreachable)
@@ -57,7 +57,7 @@ npm install && npm run dev
 
 Jaeger UI: http://localhost:16686
 
-Trigger a demonstrator, copy `x-trace-id`, search in Jaeger.
+Trigger a demonstrator, copy `x-trace-id`, search in Jaeger. Expect nested spans: `edge.request` → `api.handler` → route-specific child (e.g. `origin.asset`, `sse.stream`).
 
 ## Bundle budget
 
@@ -69,6 +69,6 @@ First Load JS target documented in ADR-001. Phase 4 adds CI enforcement via Ligh
 
 - Geo-redundant multi-region origin
 - Auth/CMS
-- In-app observability UI (Phase 4)
+- In-app RED metrics panel (Phase 4b)
 
 See `docs/adr/` for decisions and tradeoffs.

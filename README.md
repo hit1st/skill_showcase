@@ -56,8 +56,8 @@ docs/                  Architecture and ADRs
 ## Phase status
 
 - **Phase 2:** Foundation — observability, design system, homepage shell, CI
-- **Phase 3 (current):** Demonstrators — architecture explorer, SSE stream, performance budget panel
-- **Phase 4:** Observability UI, Cloudflare deploy, Lighthouse CI enforcement
+- **Phase 3:** Demonstrators — architecture explorer, SSE stream, performance budget panel
+- **Phase 4 (in progress):** OTel span export to Jaeger; observability UI, Cloudflare deploy, Lighthouse CI enforcement
 
 ## Scripts
 

@@ -39,10 +39,9 @@ export const TraceProbe = () => {
   return (
     <div className="demonstrator">
       <p className="demonstrator-copy">
-        Trace IDs come from <strong>this app</strong> at{" "}
-        <code>localhost:3000/api/*</code> — not from Jaeger UI at{" "}
-        <code>localhost:16686</code>. Click probe, then inspect the API request in
-        DevTools or open Jaeger (Phase 4 will export spans there).
+        Probe exports spans to Jaeger via OTLP. Start the collector with{" "}
+        <code>docker compose -f infra/docker/docker-compose.yml up -d</code>, click
+        probe, then open the trace in Jaeger at <code>localhost:16686</code>.
       </p>
       <div className="demonstrator-actions">
         <Button onClick={runProbe}>Probe /api/health</Button>
