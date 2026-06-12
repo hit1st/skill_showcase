@@ -5,10 +5,14 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "build:cloudflare": "opennextjs-cloudflare build",
+    "preview:cloudflare": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
+    "deploy:cloudflare": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
     "start": "next start",
     "lint": "next lint"
   },
   "dependencies": {
+    "@opennextjs/cloudflare": "^1.19.11",
     "@showcase/delivery-routes": "*",
     "@showcase/design-system": "*",
     "@showcase/observability": "*",
@@ -22,6 +26,7 @@
     "@types/react-dom": "^19.1.2",
     "eslint": "^9.27.0",
     "eslint-config-next": "^15.3.2",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "wrangler": "^4.100.0"
   }
 }

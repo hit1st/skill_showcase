@@ -1,7 +1,7 @@
 "use client";
 
 import { Button, StatusBadge } from "@showcase/design-system";
-import { DELIVERY_ROUTES } from "@showcase/delivery-routes";
+import { DELIVERY_ROUTES, resolveProbeCacheStatus } from "@showcase/delivery-routes";
 import { useState } from "react";
 
 type ProbeResult = {
@@ -13,8 +13,8 @@ type ProbeResult = {
   readonly traceId: string;
 };
 
-const readHeader = (response: Response, name: string): string =>
-  response.headers.get(name) ?? "n/a";
+const readHeader = (response: Response, name: string): string | null =>
+  response.headers.get(name);
 
 const probe = async (label: string, path: string): Promise<ProbeResult> => {
   const startedAt = performance.now();
@@ -25,8 +25,11 @@ const probe = async (label: string, path: string): Promise<ProbeResult> => {
     path,
     status: response.status,
     latencyMs: Math.round(performance.now() - startedAt),
-    cacheStatus: readHeader(response, "x-showcase-cache-status"),
-    traceId: readHeader(response, "x-trace-id"),
+    cacheStatus: resolveProbeCacheStatus({
+      "cf-cache-status": readHeader(response, "cf-cache-status"),
+      "x-showcase-cache-status": readHeader(response, "x-showcase-cache-status"),
+    }),
+    traceId: readHeader(response, "x-trace-id") ?? "n/a",
   };
 };
 

@@ -8,7 +8,7 @@ export const DELIVERY_ROUTES = {
 } as const;
 
 export const CACHE_POLICIES = {
-  cached: "public, max-age=3600, stale-while-revalidate=60",
+  cached: "public, max-age=3600, s-maxage=3600, stale-while-revalidate=60",
   dynamic: "no-store",
 } as const;
 

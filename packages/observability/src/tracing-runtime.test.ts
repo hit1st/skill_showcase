@@ -40,6 +40,31 @@ describe("createTracingStore", () => {
     expect(runtime.completedSpans).toBeDefined();
     expect(store.get()).toBe(runtime);
   });
+
+  it("registers a noop runtime on Cloudflare Workers", async () => {
+    const previous = process.env.SHOWCASE_TRACING_PLATFORM;
+    process.env.SHOWCASE_TRACING_PLATFORM = "cloudflare-workers";
+
+    try {
+      const store = createTracingStore();
+      const runtime = store.ensure({
+        serviceName: "cloudflare-test",
+        environment: "production",
+      });
+
+      await expect(
+        runtime.withSpan("edge.request", { "http.route": "/api/health" }, undefined, () => "ok"),
+      ).resolves.toBe("ok");
+      expect(runtime.completedSpans()).toEqual([]);
+    } finally {
+      if (previous === undefined) {
+        delete process.env.SHOWCASE_TRACING_PLATFORM;
+      } else {
+        process.env.SHOWCASE_TRACING_PLATFORM = previous;
+      }
+      resetTracingRuntime();
+    }
+  });
 });
 
 describe("createTracingRuntime", () => {

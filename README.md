@@ -77,7 +77,16 @@ docs/                  Architecture and ADRs
 
 - **Phase 2:** Foundation — observability, design system, homepage shell, CI
 - **Phase 3:** Demonstrators — architecture explorer, SSE stream, performance budget panel
-- **Phase 4 (in progress):** OTel span export, in-app observability panel, Lighthouse CI + bundle budget enforcement; Cloudflare deploy remains
+- **Phase 4 (in progress):** OTel span export, observability panel, Lighthouse CI, Cloudflare deploy config; pre-launch polish remains
+
+## Deploy to Cloudflare
+
+```bash
+npx wrangler login
+npm run deploy:cloudflare
+```
+
+Open the deployed `*.workers.dev` URL and run **Cache path** in the Architecture Explorer — `cf-cache-status` should show `MISS` then `HIT`.
 
 ## Scripts
 
@@ -85,6 +94,8 @@ docs/                  Architecture and ADRs
 |---------|-------------|
 | `npm test` | Run all package tests |
 | `npm run build` | Production build |
+| `npm run build:cloudflare` | Build OpenNext Worker bundle for Cloudflare |
+| `npm run deploy:cloudflare` | Build and deploy to Cloudflare Workers |
 | `npm run dev` | Local development server |
 | `npm run budget:check -- build-output.txt` | Enforce homepage First Load JS budget from build output |
 | `npm run lighthouse:ci` | Run Lighthouse against production server and enforce budgets |

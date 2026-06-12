@@ -8,6 +8,8 @@ export const isDeliveryRouteRegistered = (
 ): boolean =>
   IMPLEMENTED_ROUTES.every((route) => registered.includes(route));
 
+export { resolveProbeCacheStatus } from "./cache-headers";
+export type { CacheHeaderInput } from "./cache-headers";
 export { buildAssetPayload, resolveCacheStatus, showcaseCacheHeader } from "./asset";
 export type { AssetKind, AssetPayload, CacheStatus } from "./asset";
 export {

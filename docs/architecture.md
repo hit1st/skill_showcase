@@ -26,12 +26,12 @@ Real HTTP routes — no simulated state machine:
 
 | Route | Behavior |
 |-------|----------|
-| `GET /api/asset/cached` | `Cache-Control: public, max-age=3600, stale-while-revalidate=60`; 2nd request → `x-showcase-cache-status: HIT` |
+| `GET /api/asset/cached` | `Cache-Control: public, max-age=3600, s-maxage=3600, stale-while-revalidate=60`; local 2nd request → `x-showcase-cache-status: HIT` |
 | `GET /api/asset/dynamic` | `Cache-Control: no-store`; `x-showcase-cache-status: BYPASS` |
 | `GET /api/origin/primary?simulateFailure=1` | Returns 503 |
 | `GET /api/origin/fallback` | Returns 200 after failover |
 
-Production on Cloudflare exposes `cf-cache-status`; local dev uses `x-showcase-cache-status`.
+Production on Cloudflare exposes `cf-cache-status`; local dev uses `x-showcase-cache-status`. The Architecture Explorer prefers `cf-cache-status` when present.
 
 ### SSE delivery stream
 
@@ -40,6 +40,19 @@ Production on Cloudflare exposes `cf-cache-status`; local dev uses `x-showcase-c
 ### Performance budget panel
 
 `GET /api/budget` reads checked-in Lighthouse CI summary from `apps/web/data/lighthouse-summary.json` and evaluates against showcase thresholds (performance ≥ 90, accessibility ≥ 95, LCP < 2.5s, CLS ≤ 0.1).
+
+## Deploy (Cloudflare Workers)
+
+Built with `@opennextjs/cloudflare` per ADR-002. Wrangler config: `apps/web/wrangler.jsonc`.
+
+```bash
+npm run build:cloudflare          # verify Worker bundle (also runs in CI)
+npm run deploy:cloudflare         # requires wrangler login + Cloudflare account
+```
+
+Production cache probes: run **Cache path** in the Architecture Explorer — expect first request `cf-cache-status: MISS`, second `HIT` on the same PoP.
+
+**Tradeoffs:** Workers Free limits (3 MB bundle, 100k req/day). OTLP span export is disabled on Workers (`SHOWCASE_TRACING_PLATFORM=cloudflare-workers`); middleware still propagates `x-trace-id`. Production readiness reports `otlp_exporter` degraded unless a remote collector is configured.
 
 ## Observability
 

@@ -2,7 +2,7 @@
 
 ## Status
 
-Accepted
+Accepted — Phase 4d: OpenNext build wired; deploy via `npm run deploy:cloudflare`.
 
 ## Context
 

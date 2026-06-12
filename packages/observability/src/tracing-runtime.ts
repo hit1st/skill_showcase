@@ -20,6 +20,7 @@ import { NodeTracerProvider } from "@opentelemetry/sdk-trace-node";
 import { ATTR_SERVICE_NAME } from "@opentelemetry/semantic-conventions";
 import { createShowcaseSampler } from "./showcase-sampler";
 import type { SpanAttributes } from "./span-attributes";
+import { resolveTracingPlatform } from "./tracing-platform";
 
 export type TracingEnvironment = "development" | "production";
 
@@ -164,6 +165,23 @@ export const createTracingRuntime = (config: TracingConfig): TracingRuntime => {
   };
 };
 
+/**
+ * Workers runtime lacks Node OTel SDK primitives; pass-through keeps handlers alive
+ * while middleware continues W3C trace propagation.
+ */
+export const createNoopTracingRuntime = (): TracingRuntime => ({
+  withSpan: async <T>(
+    _name: string,
+    _attributes: SpanAttributes,
+    _parentContext: Context | undefined,
+    fn: () => T | Promise<T>,
+  ): Promise<T> => fn(),
+  extractContext: () => context.active(),
+  forceFlush: async (): Promise<void> => undefined,
+  shutdown: async (): Promise<void> => undefined,
+  completedSpans: () => [],
+});
+
 const publishRuntime = (runtime: TracingRuntime): TracingRuntime => {
   writeGlobalRuntime(runtime);
   return runtime;
@@ -173,6 +191,11 @@ const publishRuntime = (runtime: TracingRuntime): TracingRuntime => {
  * Next.js loads duplicate module instances; globalThis slot plus local binding
  * keeps registration idempotent across instrumentation and route bundles.
  */
+const createRuntimeForPlatform = (config: TracingConfig): TracingRuntime =>
+  resolveTracingPlatform() === "nodejs"
+    ? createTracingRuntime(config)
+    : createNoopTracingRuntime();
+
 export const createTracingStore = (): TracingStore => {
   let localRuntime: TracingRuntime | undefined;
 
@@ -188,7 +211,7 @@ export const createTracingStore = (): TracingStore => {
         return existing;
       }
 
-      const runtime = publishRuntime(createTracingRuntime(config));
+      const runtime = publishRuntime(createRuntimeForPlatform(config));
       localRuntime = runtime;
       return runtime;
     },
@@ -199,7 +222,9 @@ export const createTracingStore = (): TracingStore => {
         return existing;
       }
 
-      const runtime = publishRuntime(createTracingRuntime(resolveTracingConfig(config)));
+      const runtime = publishRuntime(
+        createRuntimeForPlatform(resolveTracingConfig(config)),
+      );
       localRuntime = runtime;
       return runtime;
     },
@@ -234,3 +259,6 @@ export const resetTracingRuntime = (): void => {
 export const ensureTracingRegistered = (
   config: Partial<TracingConfig> = {},
 ): TracingRuntime => defaultTracingStore.ensure(config);
+
+export { resolveTracingPlatform } from "./tracing-platform";
+export type { TracingPlatform } from "./tracing-platform";

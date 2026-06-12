@@ -19,6 +19,7 @@ jobs:
       - run: npm test
       - run: npm run build 2>&1 | tee build-output.txt
       - run: npm run budget:check -- build-output.txt
+      - run: npm run build:cloudflare
       - name: Install Chromium for Lighthouse
         run: sudo apt-get update && sudo apt-get install -y chromium-browser
       - run: npm run lighthouse:ci
