@@ -1,0 +1,20 @@
+{
+  "name": "skill-showcase",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "npm run build --workspace=@showcase/web",
+    "dev": "npm run dev --workspace=@showcase/web",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "npm run lint --workspace=@showcase/web"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.21",
+    "typescript": "^5.8.3",
+    "vitest": "^3.2.1"
+  }
+}

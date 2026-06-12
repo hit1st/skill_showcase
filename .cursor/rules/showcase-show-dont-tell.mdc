@@ -1,0 +1,70 @@
+---
+description: Showcase site philosophy — mastery via implementation, not marketing copy
+alwaysApply: true
+---
+
+# Showcase Site: Show, Don't Tell
+
+This repo is a **technical artifact**. Evaluators at streaming, media, cloud, AI, and devtools companies infer system design, architecture, engineering, and design mastery from **what the site does and how it is built** — not from resume copy.
+
+## Copy budget
+
+- Homepage: name, contact, optional one factual line (e.g. "Platform engineer")
+- No impact cards, expertise maps, skill bars, case study grids, or self-described seniority
+- Every UI element must **do something** or **reveal how something works**
+
+## Demonstrate via implementation
+
+| Dimension | Show through | Not through |
+|-----------|--------------|-------------|
+| System design | Boundaries, data flow, failure modes; `docs/architecture.md` or ADRs | Claims like "designed scalable systems" |
+| Architecture | Module graph, deploy topology, cache strategy | Stack logo walls |
+| Engineering | Types, tests, CI, error handling, observability | "Clean code advocate" |
+| Design | a11y, loading states, `prefers-reduced-motion`, intentional motion | "Eye for design" |
+
+## Tracing & observability (required)
+
+- OpenTelemetry (or equivalent) with trace propagation edge → app → downstream
+- Structured logs with `trace_id` / `request_id`; RED metrics; `/health` + `/ready`
+- Visible observability surface: reviewers trigger a request and follow its trace
+- Instrument in foundation (Phase 2), not bolted on at deploy time
+- ADR for tracing backend, sampling, and instrumentation boundaries
+
+## Required for new features
+
+1. **Rationale** — ADR or architecture doc entry: context, options, decision, consequences
+2. **Instrumentation** — Spans/logs at new boundaries; trace context propagated on outbound calls
+3. **Tests** — Happy path + at least one failure path for demonstrators
+4. **Verify** — `npm run build` and `npm test` pass before finishing
+
+## Quality bars
+
+- Lighthouse: Performance ≥ 90, Accessibility ≥ 95
+- Bounded modules with explicit APIs; no god components
+- README includes "How to evaluate this project" for technical reviewers
+
+## Functional boundaries (repo-specific)
+
+- `packages/*`: pure functions and immutable data; derive state with `reduce`, not in-place mutation
+- `apps/web` routes: no module-level counters or flags; use `create*Store()` factories from packages
+- React demonstrators: state transitions via reducers (e.g. `reduceDeliveryStreamState`); side effects isolated in hooks
+- Imperative code allowed only at I/O boundaries (HTTP handlers, Web Streams, EventSource, `Headers.set`); comment why at the boundary
+- Behavior changes: failing test first (see Required for new features)
+
+## Anti-patterns
+
+```text
+❌ Resume sections, buzzwords, testimonial carousels
+❌ Features for visual flair without engineering rationale
+❌ Microservices or complexity that doesn't teach a tradeoff
+❌ Architecture docs describing aspirational systems not what's built
+❌ Lighthouse gaming via empty pages
+❌ console.log-only debugging; health checks that always return 200
+❌ Observability deferred to "later" — wire tracing in foundation
+❌ Module-level mutable state in routes (`let` counters, flags) — use store factories
+❌ Imperative loops/mutation in `packages/*` without documented I/O-boundary exception
+```
+
+## When unsure
+
+Propose architecture and demonstrator choice first. Ask one focused question, then proceed conservatively. Full prompt: `templates/personal-homepage-showcase-prompt.md`.

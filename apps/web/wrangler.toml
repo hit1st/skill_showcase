@@ -1,0 +1,6 @@
+name = "showcase-web"
+main = ".open-next/worker.js"
+compatibility_date = "2025-04-01"
+
+[vars]
+OTEL_EXPORTER_OTLP_ENDPOINT = "http://127.0.0.1:4318"

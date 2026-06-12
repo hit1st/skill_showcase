@@ -1,0 +1,8 @@
+{
+  "performanceScore": 0.94,
+  "audits": {
+    "largest-contentful-paint": { "numericValue": 2100 },
+    "interaction-to-next-paint": { "numericValue": 120 },
+    "cumulative-layout-shift": { "numericValue": 0.04 }
+  }
+}
